@@ -12,19 +12,22 @@ class SellerSeeder extends Seeder
     {
         $sellers = [
             [
-                'name' => 'Maria Santos',
+                'name' => 'Dr. Maria Santos',
                 'email' => 'devnight0710@gmail.com',
                 'phone' => '(11) 98765-4321',
+                'account_type' => 'professional',
             ],
             [
-                'name' => 'João Silva',
+                'name' => 'Dr. João Silva',
                 'email' => 'dollycookie0710@gmail.com',
                 'phone' => '(21) 97654-3210',
+                'account_type' => 'professional',
             ],
             [
-                'name' => 'Ana Costa',
+                'name' => 'Associação MedGarden',
                 'email' => 'tom8jerry0913@gmail.com',
                 'phone' => '(31) 96543-2109',
+                'account_type' => 'association',
             ],
         ];
 
@@ -35,12 +38,13 @@ class SellerSeeder extends Seeder
                 'phone' => $sellerData['phone'],
                 'password' => Hash::make('password123'),
                 'role' => 'seller',
+                'account_type' => $sellerData['account_type'],
                 'seller_status' => 'approved',
                 'seller_approved_at' => now(),
                 'is_active' => true,
             ]);
         }
 
-        echo "Created " . count($sellers) . " sellers successfully!\n";
+        echo "Created " . count($sellers) . " professionals/associations successfully!\n";
     }
 }

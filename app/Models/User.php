@@ -23,6 +23,7 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'phone',
         'role',
+        'account_type',
         'seller_status',
         'seller_approved',
         'seller_requested_at',
@@ -112,6 +113,54 @@ class User extends Authenticatable implements JWTSubject
     public function isBuyer(): bool
     {
         return $this->role === 'buyer';
+    }
+
+    /**
+     * Check if user is patient (new role type)
+     */
+    public function isPatient(): bool
+    {
+        return $this->account_type === 'patient' || ($this->role === 'buyer' && !$this->account_type);
+    }
+
+    /**
+     * Check if user is professional (new role type)
+     */
+    public function isProfessional(): bool
+    {
+        return $this->account_type === 'professional' || ($this->role === 'seller' && !$this->account_type);
+    }
+
+    /**
+     * Check if user is association (new role type)
+     */
+    public function isAssociation(): bool
+    {
+        return $this->account_type === 'association';
+    }
+
+    /**
+     * Get user's display role (for frontend)
+     */
+    public function getDisplayRole(): string
+    {
+        if ($this->account_type) {
+            return match ($this->account_type) {
+                'patient' => 'Paciente',
+                'professional' => 'Profissional',
+                'association' => 'Associação',
+                'store' => 'Loja',
+                default => ucfirst($this->role),
+            };
+        }
+
+        return match ($this->role) {
+            'buyer' => 'Paciente',
+            'seller' => 'Profissional',
+            'admin' => 'Admin',
+            'super_admin' => 'Super Admin',
+            default => ucfirst($this->role),
+        };
     }
 
     /**

@@ -23,7 +23,8 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
-            'role' => 'nullable|string|in:buyer,seller',
+            'role' => 'nullable|string|in:buyer,seller,patient,professional,association',
+            'account_type' => 'nullable|string|in:patient,professional,association,store',
         ]);
 
         if ($validator->fails()) {
@@ -33,11 +34,22 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Default role is buyer, but allow seller registration
+        // Default role is buyer, but allow new role types
         $role = $request->input('role', 'buyer');
+        $accountType = $request->input('account_type', null);
 
-        // If seller role is requested, set seller status to pending approval
-        $sellerStatus = $role === 'seller' ? 'pending' : null;
+        // Map account_type to role for backward compatibility
+        // If no role provided but account_type is, map it
+        if (!$request->has('role') && $accountType) {
+            if ($accountType === 'patient') {
+                $role = 'buyer'; // patients are buyers
+            } elseif ($accountType === 'professional' || $accountType === 'association') {
+                $role = 'seller'; // professionals and associations are sellers
+            }
+        }
+
+        // If seller/professional/association role is requested, set seller status to pending approval
+        $sellerStatus = in_array($role, ['seller', 'professional']) || $accountType === 'professional' ? 'pending' : null;
 
         $user = User::create([
             'name' => $request->name,
@@ -45,8 +57,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'phone' => $request->phone,
             'role' => $role,
+            'account_type' => $accountType,
             'seller_status' => $sellerStatus,
-            'seller_requested_at' => $role === 'seller' ? now() : null,
+            'seller_requested_at' => in_array($role, ['seller', 'professional']) ? now() : null,
         ]);
 
         // Trigger Registered event - this will automatically queue welcome email
