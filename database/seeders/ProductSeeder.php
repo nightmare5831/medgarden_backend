@@ -11,11 +11,11 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        // Get sellers
-        $sellers = User::where('role', 'seller')->where('seller_status', 'approved')->get();
+        // Get professionals (professional, association, store)
+        $professionals = User::whereIn('role', ['professional', 'association', 'store'])->get();
 
-        if ($sellers->isEmpty()) {
-            echo "No approved sellers found. Please run UserSeeder first.\n";
+        if ($professionals->isEmpty()) {
+            echo "No professionals found. Please run ProfessionalSeeder first.\n";
             return;
         }
 
@@ -30,7 +30,7 @@ class ProductSeeder extends Seeder
         $karats = ['18k', '18k', '18k', '14k', '14k', '10k'];
 
         foreach ($products as $index => $productData) {
-            $seller = $sellers->random();
+            $professional = $professionals->random();
             $status = $statuses[array_rand($statuses)];
             $karat = $karats[array_rand($karats)];
             $currentPrice = $productData['base_price'];
@@ -42,7 +42,7 @@ class ProductSeeder extends Seeder
             ];
 
             Product::create([
-                'seller_id' => $seller->id,
+                'seller_id' => $professional->id,
                 'name' => $productData['name'],
                 'description' => $descriptions[array_rand($descriptions)],
                 'base_price' => $productData['base_price'],

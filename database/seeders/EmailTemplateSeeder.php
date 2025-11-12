@@ -106,11 +106,11 @@ class EmailTemplateSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'template_key' => 'product_approved_seller',
-                'name' => 'Produto Aprovado (Para Vendedor)',
+                'template_key' => 'product_approved_professional',
+                'name' => 'Produto Aprovado (Para Profissional)',
                 'subject' => 'Seu Produto Foi Aprovado!',
-                'body_html' => '<p><strong>Parabéns {{sellerName}}!</strong></p><p>Seu produto <strong>{{productName}}</strong> foi aprovado e já está disponível na loja!</p><p>Preço: <strong>{{productPrice}}</strong></p><p>Agora os clientes podem visualizar e comprar seu produto. Boa sorte com as vendas!</p>',
-                'variables' => ['sellerName', 'productName', 'productPrice', 'productImage'],
+                'body_html' => '<p><strong>Parabéns {{professionalName}}!</strong></p><p>Seu produto <strong>{{productName}}</strong> foi aprovado e já está disponível na loja!</p><p>Preço: <strong>{{productPrice}}</strong></p><p>Agora os clientes podem visualizar e comprar seu produto. Boa sorte com as vendas!</p>',
+                'variables' => ['professionalName', 'productName', 'productPrice', 'productImage'],
                 'is_active' => true,
             ],
             [

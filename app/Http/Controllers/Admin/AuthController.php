@@ -34,17 +34,13 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            if ($user->isSuperAdmin()) {
+            // Redirect based on user role
+            if ($user->isAdmin()) {
+                // Super admin goes to admin dashboard
                 return redirect()->intended(route('admin.dashboard'));
-            } elseif ($user->role === 'seller' && $user->seller_status === 'approved') {
-                return redirect()->intended(route('seller.dashboard'));
-            } elseif ($user->role === 'buyer') {
-                return redirect()->intended(route('buyer.dashboard'));
             } else {
-                Auth::logout();
-                return back()->withErrors([
-                    'email' => 'Você não tem permissão para acessar o painel.',
-                ]);
+                // All other users (patient, professional, association, store) go to buyer dashboard
+                return redirect()->intended(route('buyer.dashboard'));
             }
         }
 
@@ -71,7 +67,7 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:buyer,seller',
+            'role' => 'required|in:patient,professional,association,store',
         ]);
 
         $user = \App\Models\User::create([
@@ -80,8 +76,6 @@ class AuthController extends Controller
             'password' => bcrypt($validated['password']),
             'phone' => $validated['phone'] ?? null,
             'role' => $validated['role'],
-            'seller_approved' => false,
-            'seller_status' => $validated['role'] === 'seller' ? 'pending' : null,
         ]);
 
         // Trigger Registered event - this will automatically queue welcome email

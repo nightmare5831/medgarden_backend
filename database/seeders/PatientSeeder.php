@@ -42,9 +42,9 @@ class PatientSeeder extends Seeder
                 'email' => $patientData['email'],
                 'phone' => $patientData['phone'],
                 'password' => Hash::make('password123'),
-                'role' => 'buyer',
-                'account_type' => 'patient',
+                'role' => 'patient',
                 'is_active' => true,
+                'email_verified_at' => now(),
             ]);
         }
 

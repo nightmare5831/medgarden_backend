@@ -19,18 +19,16 @@ class DashboardController extends Controller
 
         $stats = [
             'total_users' => User::count(),
-            'total_buyers' => User::where('role', 'buyer')->count(),
-            'total_sellers' => User::where('role', 'seller')->where('seller_status', 'approved')->count(),
-            'pending_sellers' => User::where('role', 'seller')->where('seller_status', 'pending')->count(),
-            'sellers_last_7_days' => User::where('role', 'seller')->where('created_at', '>=', $sevenDaysAgo)->count(),
+            'total_patients' => User::where('role', 'patient')->count(),
+            'total_professionals' => User::whereIn('role', ['professional', 'association', 'store'])->count(),
+            'professionals_last_7_days' => User::whereIn('role', ['professional', 'association', 'store'])->where('created_at', '>=', $sevenDaysAgo)->count(),
             'total_products' => Product::count(),
             'pending_products' => Product::where('status', 'pending')->count(),
             'approved_products' => Product::where('status', 'approved')->count(),
             'rejected_products' => Product::where('status', 'rejected')->count(),
         ];
 
-        $recent_sellers = User::where('role', 'seller')
-            ->where('seller_status', 'pending')
+        $recent_professionals = User::whereIn('role', ['professional', 'association', 'store'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
@@ -45,7 +43,7 @@ class DashboardController extends Controller
         $goldPriceHistory = GoldPrice::getRecentForChart(10);
 
         $startDate = Carbon::now()->subDays(7);
-        $sellerRegistrations = User::where('role', 'seller')
+        $professionalRegistrations = User::whereIn('role', ['professional', 'association', 'store'])
             ->where('created_at', '>=', $startDate)
             ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
             ->groupBy('date')
@@ -58,16 +56,16 @@ class DashboardController extends Controller
             $date = Carbon::now()->subDays($i)->format('Y-m-d');
             $chartData[] = [
                 'date' => $date,
-                'count' => $sellerRegistrations->get($date)?->count ?? 0,
+                'count' => $professionalRegistrations->get($date)?->count ?? 0,
             ];
         }
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => $stats,
-            'recent_sellers' => $recent_sellers,
+            'recent_professionals' => $recent_professionals,
             'recent_products' => $recent_products,
             'gold_price_history' => $goldPriceHistory,
-            'seller_registrations_chart' => $chartData,
+            'professional_registrations_chart' => $chartData,
         ]);
     }
 }

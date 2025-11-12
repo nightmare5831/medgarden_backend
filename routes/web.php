@@ -11,11 +11,11 @@ Route::get('/', function () {
     if (Auth::check()) {
         $user = Auth::user();
 
-        if ($user->isSuperAdmin()) {
+        if ($user->isAdmin()) {
+            // Super admin goes to admin dashboard
             return redirect()->route('admin.dashboard');
-        } elseif ($user->role === 'seller' && $user->seller_status === 'approved') {
-            return redirect()->route('seller.dashboard');
-        } elseif ($user->role === 'buyer') {
+        } else {
+            // All other users (patient, professional, association, store) go to buyer dashboard
             return redirect()->route('buyer.dashboard');
         }
     }
@@ -34,11 +34,9 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.su
 Route::prefix('admin')->middleware(['auth', 'super_admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
-    Route::get('/sellers', [\App\Http\Controllers\Admin\SellerController::class, 'index'])->name('admin.sellers.index');
-    Route::post('/sellers/{seller}/approve', [\App\Http\Controllers\Admin\SellerController::class, 'approve'])->name('admin.sellers.approve');
-    Route::post('/sellers/{seller}/reject', [\App\Http\Controllers\Admin\SellerController::class, 'reject'])->name('admin.sellers.reject');
-    Route::post('/sellers/{seller}/deactivate', [\App\Http\Controllers\Admin\SellerController::class, 'deactivate'])->name('admin.sellers.deactivate');
-    Route::post('/sellers/{seller}/activate', [\App\Http\Controllers\Admin\SellerController::class, 'activate'])->name('admin.sellers.activate');
+    Route::get('/users', [\App\Http\Controllers\Admin\UsersController::class, 'index'])->name('admin.users.index');
+    Route::post('/users/{user}/deactivate', [\App\Http\Controllers\Admin\UsersController::class, 'deactivate'])->name('admin.users.deactivate');
+    Route::post('/users/{user}/activate', [\App\Http\Controllers\Admin\UsersController::class, 'activate'])->name('admin.users.activate');
 
     Route::get('/products', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('admin.products.index');
     Route::get('/products/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'show'])->name('admin.products.show');

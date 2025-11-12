@@ -23,8 +23,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
-            'role' => 'nullable|string|in:buyer,seller,patient,professional,association',
-            'account_type' => 'nullable|string|in:patient,professional,association,store',
+            'role' => 'required|string|in:patient,professional,association,store',
         ]);
 
         if ($validator->fails()) {
@@ -34,22 +33,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Default role is buyer, but allow new role types
-        $role = $request->input('role', 'buyer');
-        $accountType = $request->input('account_type', null);
-
-        // Map account_type to role for backward compatibility
-        // If no role provided but account_type is, map it
-        if (!$request->has('role') && $accountType) {
-            if ($accountType === 'patient') {
-                $role = 'buyer'; // patients are buyers
-            } elseif ($accountType === 'professional' || $accountType === 'association') {
-                $role = 'seller'; // professionals and associations are sellers
-            }
-        }
-
-        // If seller/professional/association role is requested, set seller status to pending approval
-        $sellerStatus = in_array($role, ['seller', 'professional']) || $accountType === 'professional' ? 'pending' : null;
+        $role = $request->input('role', 'patient');
 
         $user = User::create([
             'name' => $request->name,
@@ -57,9 +41,6 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'phone' => $request->phone,
             'role' => $role,
-            'account_type' => $accountType,
-            'seller_status' => $sellerStatus,
-            'seller_requested_at' => in_array($role, ['seller', 'professional']) ? now() : null,
         ]);
 
         // Trigger Registered event - this will automatically queue welcome email
@@ -154,27 +135,38 @@ class AuthController extends Controller
     }
 
     /**
-     * Request to become a seller
+     * Upgrade from patient to seller type
      */
-    public function requestSellerRole(Request $request)
+    public function upgradeToSeller(Request $request)
     {
         $user = auth()->user();
 
-        if ($user->role !== 'buyer') {
+        if ($user->role !== 'patient') {
             return response()->json([
                 'success' => false,
-                'message' => 'Only buyers can request seller role'
+                'message' => 'Only patients can upgrade to seller'
             ], 400);
         }
 
+        // Allow user to specify which seller type they want to become
+        $validator = Validator::make($request->all(), [
+            'seller_type' => 'required|string|in:professional,association,store',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         $user->update([
-            'seller_requested_at' => now(),
-            'seller_status' => 'pending',
+            'role' => $request->seller_type,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Seller request submitted successfully. Awaiting admin approval.',
+            'message' => 'Successfully upgraded to seller account.',
         ]);
     }
 }

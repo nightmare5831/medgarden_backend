@@ -18,11 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone', 20)->nullable();
-            $table->enum('role', ['buyer', 'seller', 'admin', 'super_admin'])->default('buyer');
-            $table->boolean('seller_approved')->default(false);
-            $table->timestamp('seller_requested_at')->nullable();
-            $table->foreignId('seller_approved_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamp('seller_approved_at')->nullable();
+            $table->enum('role', ['patient', 'professional', 'association', 'store', 'super_admin'])->default('patient');
             $table->string('google_id')->nullable()->unique();
             $table->string('avatar_url')->nullable();
             $table->boolean('is_active')->default(true);

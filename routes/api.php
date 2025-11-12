@@ -23,7 +23,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::post('/request-seller-role', [AuthController::class, 'requestSellerRole']);
+    Route::post('/upgrade-to-seller', [AuthController::class, 'upgradeToSeller']);
 
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{id}', [ProductController::class, 'update']);

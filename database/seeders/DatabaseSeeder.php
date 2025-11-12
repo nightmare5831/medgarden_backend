@@ -20,10 +20,10 @@ class DatabaseSeeder extends Seeder
             // 1. Email templates (independent)
             EmailTemplateSeeder::class,
 
-            // 2. Users (SuperAdmin, Professionals/Associations, and Patients)
-            SuperAdminSeeder::class,
-            SellerSeeder::class, // Creates Professionals and Associations
-            PatientSeeder::class, // Creates Patients
+            // 2. Users (5 role types: super_admin, patient, professional, association, store)
+            SuperAdminSeeder::class,     // Creates super_admin
+            ProfessionalSeeder::class,   // Creates professionals, associations, and stores
+            PatientSeeder::class,        // Creates patients
 
             // 3. Gold prices (independent)
             GoldPriceSeeder::class,
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             // 4. Categories (independent)
             CategorySeeder::class,
 
-            // 5. Products (depends on sellers, gold prices, categories)
+            // 5. Products (depends on users, gold prices, categories)
             ProductSeeder::class,
 
             // 6. Messages (depends on users)
