@@ -12,23 +12,36 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        if ($user && $user->isSeller()) {
-            // Web App (Authenticated Seller) - Show their own products
-            $products = Product::where('seller_id', $user->id)
-                ->latest()
-                ->paginate(20);
-        } elseif ($user && $user->isAdmin()) {
-            // Web App (Admin) - Show all products
-            $products = Product::latest()->paginate(20);
-        } else {
-            // Android App (Public) - Show only approved & active products
-            $products = Product::where('status', 'approved')
-                ->where('is_active', true)
-                ->latest()
-                ->paginate(20);
-        }
+        // Android App (Public) - Show only approved & active products with owner info
+        $products = Product::with('user:id,name,role')
+            ->where('status', 'approved')
+            ->where('is_active', true)
+            ->latest()
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'description' => $product->description,
+                    'price' => $product->current_price,
+                    'originalPrice' => $product->base_price,
+                    'images' => $product->images ?? [],
+                    'thumbnail' => $product->images[0] ?? '',
+                    'category' => $product->category,
+                    'rating' => 4.5, // Mock data
+                    'reviewCount' => rand(10, 100), // Mock data
+                    'featured' => $product->status === 'approved',
+                    'shipping' => [
+                        'free' => true,
+                        'days' => rand(5, 10),
+                    ],
+                    'model3dUrl' => $product->model_3d_url,
+                    'model3dType' => $product->model_3d_type,
+                    'ownerId' => $product->user->id ?? null,
+                    'ownerName' => $product->user->name ?? 'Usuário',
+                    'ownerRole' => $product->user->role ?? 'store',
+                ];
+            });
 
         return response()->json($products);
     }
