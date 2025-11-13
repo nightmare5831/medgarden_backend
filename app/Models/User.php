@@ -23,11 +23,6 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'phone',
         'role',
-        'seller_status',
-        'seller_approved',
-        'seller_requested_at',
-        'seller_approved_by',
-        'seller_approved_at',
         'google_id',
         'avatar_url',
         'is_active',
@@ -53,9 +48,6 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'seller_approved' => 'boolean',
-            'seller_requested_at' => 'datetime',
-            'seller_approved_at' => 'datetime',
             'is_active' => 'boolean',
         ];
     }
@@ -153,11 +145,4 @@ class User extends Authenticatable implements JWTSubject
         };
     }
 
-    /**
-     * Seller who approved this seller (if applicable)
-     */
-    public function approvedBy()
-    {
-        return $this->belongsTo(User::class, 'seller_approved_by');
-    }
 }

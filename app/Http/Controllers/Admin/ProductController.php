@@ -21,7 +21,7 @@ class ProductController extends Controller
         $category = $request->get('category', 'all');
         $perPage = $request->get('per_page', 14);
 
-        $query = Product::with(['seller'])
+        $query = Product::with(['user'])
             ->latest();
 
         if ($status !== 'all') {
@@ -33,7 +33,7 @@ class ProductController extends Controller
         }
 
         if ($ownerName) {
-            $query->whereHas('seller', function ($q) use ($ownerName) {
+            $query->whereHas('user', function ($q) use ($ownerName) {
                 $q->where('name', 'like', "%{$ownerName}%");
             });
         }
@@ -80,7 +80,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with(['seller', 'approvedBy'])->findOrFail($id);
+        $product = Product::with(['user', 'approvedBy'])->findOrFail($id);
 
         $latestGoldPrice = \App\Models\GoldPrice::getLatest();
         if ($latestGoldPrice) {

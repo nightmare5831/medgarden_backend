@@ -30,8 +30,8 @@ class ProductController extends Controller
                 'images' => $product->images ?? [],
                 'thumbnail' => isset($product->images[0]) ? $product->images[0] : '',
                 'category' => $product->category,
-                'rating' => 4.5, // Mock data
-                'reviewCount' => rand(10, 100), // Mock data
+                'rating' => 4.5, 
+                'reviewCount' => rand(10, 100), 
                 'featured' => $product->status === 'approved',
                 'shipping' => [
                     'free' => true,
