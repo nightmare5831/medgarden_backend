@@ -11,11 +11,11 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        // Get professionals (professional, association, store)
-        $professionals = User::whereIn('role', ['professional', 'association', 'store'])->get();
+        // Get all users (any role can create products)
+        $users = User::all();
 
-        if ($professionals->isEmpty()) {
-            echo "No professionals found. Please run ProfessionalSeeder first.\n";
+        if ($users->isEmpty()) {
+            echo "No users found. Please run UserSeeder first.\n";
             return;
         }
 
@@ -30,7 +30,7 @@ class ProductSeeder extends Seeder
         $karats = ['18k', '18k', '18k', '14k', '14k', '10k'];
 
         foreach ($products as $index => $productData) {
-            $professional = $professionals->random();
+            $user = $users->random();
             $status = $statuses[array_rand($statuses)];
             $karat = $karats[array_rand($karats)];
             $currentPrice = $productData['base_price'];
@@ -42,7 +42,7 @@ class ProductSeeder extends Seeder
             ];
 
             Product::create([
-                'seller_id' => $professional->id,
+                'user_id' => $user->id,
                 'name' => $productData['name'],
                 'description' => $descriptions[array_rand($descriptions)],
                 'base_price' => $productData['base_price'],
@@ -51,7 +51,6 @@ class ProductSeeder extends Seeder
                 'gold_karat' => $karat,
                 'initial_gold_price' => $currentGoldPrice,
                 'category' => $productData['category'],
-                'subcategory' => $productData['subcategory'],
                 'images' => json_encode($images),
                 // Use external GitHub repository for 3D model files
                 'model_3d_url' => 'https://github.com/nightmare5831/public_asset/releases/download/3d-models-v1/jewelry.glb',
@@ -71,44 +70,34 @@ class ProductSeeder extends Seeder
     private function getProductsData(): array
     {
         return [
-            // Masculino - Anéis
-            ['name' => 'Anel Masculino em Ouro 18k', 'category' => 'Masculino', 'subcategory' => 'Anéis', 'gold_weight' => 5.5, 'base_price' => 2500.00],
-            ['name' => 'Anel Solitário Masculino', 'category' => 'Masculino', 'subcategory' => 'Anéis', 'gold_weight' => 6.0, 'base_price' => 2800.00],
-            ['name' => 'Anel Masculino com Pedra', 'category' => 'Masculino', 'subcategory' => 'Anéis', 'gold_weight' => 7.2, 'base_price' => 3200.00],
+            // Masculino
+            ['name' => 'Anel Masculino em Ouro 18k', 'category' => 'Masculino', 'gold_weight' => 5.5, 'base_price' => 2500.00],
+            ['name' => 'Anel Solitário Masculino', 'category' => 'Masculino', 'gold_weight' => 6.0, 'base_price' => 2800.00],
+            ['name' => 'Anel Masculino com Pedra', 'category' => 'Masculino', 'gold_weight' => 7.2, 'base_price' => 3200.00],
+            ['name' => 'Corrente Grumet Masculina', 'category' => 'Masculino', 'gold_weight' => 15.0, 'base_price' => 5500.00],
+            ['name' => 'Corrente Cartier Masculina', 'category' => 'Masculino', 'gold_weight' => 12.5, 'base_price' => 4800.00],
+            ['name' => 'Pulseira Masculina Grossa', 'category' => 'Masculino', 'gold_weight' => 10.0, 'base_price' => 4200.00],
+            ['name' => 'Pulseira Masculina Cartier', 'category' => 'Masculino', 'gold_weight' => 8.5, 'base_price' => 3800.00],
 
-            // Masculino - Colares
-            ['name' => 'Corrente Grumet Masculina', 'category' => 'Masculino', 'subcategory' => 'Colares', 'gold_weight' => 15.0, 'base_price' => 5500.00],
-            ['name' => 'Corrente Cartier Masculina', 'category' => 'Masculino', 'subcategory' => 'Colares', 'gold_weight' => 12.5, 'base_price' => 4800.00],
-
-            // Masculino - Pulseiras
-            ['name' => 'Pulseira Masculina Grossa', 'category' => 'Masculino', 'subcategory' => 'Pulseiras', 'gold_weight' => 10.0, 'base_price' => 4200.00],
-            ['name' => 'Pulseira Masculina Cartier', 'category' => 'Masculino', 'subcategory' => 'Pulseiras', 'gold_weight' => 8.5, 'base_price' => 3800.00],
-
-            // Feminino - Anéis
-            ['name' => 'Anel Solitário Feminino', 'category' => 'Feminino', 'subcategory' => 'Anéis', 'gold_weight' => 3.5, 'base_price' => 1800.00],
-            ['name' => 'Anel Meia Aliança', 'category' => 'Feminino', 'subcategory' => 'Anéis', 'gold_weight' => 4.0, 'base_price' => 2100.00],
-            ['name' => 'Anel de Noivado', 'category' => 'Feminino', 'subcategory' => 'Anéis', 'gold_weight' => 3.2, 'base_price' => 1650.00],
-
-            // Feminino - Colares
-            ['name' => 'Corrente Veneziana Feminina', 'category' => 'Feminino', 'subcategory' => 'Colares', 'gold_weight' => 6.0, 'base_price' => 2800.00],
-            ['name' => 'Corrente Cartier Feminina', 'category' => 'Feminino', 'subcategory' => 'Colares', 'gold_weight' => 5.5, 'base_price' => 2600.00],
-
-            // Feminino - Brincos
-            ['name' => 'Brinco Argola Média', 'category' => 'Feminino', 'subcategory' => 'Brincos', 'gold_weight' => 3.0, 'base_price' => 1600.00],
-            ['name' => 'Brinco Argola Grande', 'category' => 'Feminino', 'subcategory' => 'Brincos', 'gold_weight' => 4.5, 'base_price' => 2100.00],
-            ['name' => 'Brinco Solitário', 'category' => 'Feminino', 'subcategory' => 'Brincos', 'gold_weight' => 2.5, 'base_price' => 1400.00],
-
-            // Feminino - Pulseiras
-            ['name' => 'Pulseira Feminina Delicada', 'category' => 'Feminino', 'subcategory' => 'Pulseiras', 'gold_weight' => 5.0, 'base_price' => 2400.00],
-            ['name' => 'Pulseira Cartier Feminina', 'category' => 'Feminino', 'subcategory' => 'Pulseiras', 'gold_weight' => 6.0, 'base_price' => 2750.00],
+            // Feminino
+            ['name' => 'Anel Solitário Feminino', 'category' => 'Feminino', 'gold_weight' => 3.5, 'base_price' => 1800.00],
+            ['name' => 'Anel Meia Aliança', 'category' => 'Feminino', 'gold_weight' => 4.0, 'base_price' => 2100.00],
+            ['name' => 'Anel de Noivado', 'category' => 'Feminino', 'gold_weight' => 3.2, 'base_price' => 1650.00],
+            ['name' => 'Corrente Veneziana Feminina', 'category' => 'Feminino', 'gold_weight' => 6.0, 'base_price' => 2800.00],
+            ['name' => 'Corrente Cartier Feminina', 'category' => 'Feminino', 'gold_weight' => 5.5, 'base_price' => 2600.00],
+            ['name' => 'Brinco Argola Média', 'category' => 'Feminino', 'gold_weight' => 3.0, 'base_price' => 1600.00],
+            ['name' => 'Brinco Argola Grande', 'category' => 'Feminino', 'gold_weight' => 4.5, 'base_price' => 2100.00],
+            ['name' => 'Brinco Solitário', 'category' => 'Feminino', 'gold_weight' => 2.5, 'base_price' => 1400.00],
+            ['name' => 'Pulseira Feminina Delicada', 'category' => 'Feminino', 'gold_weight' => 5.0, 'base_price' => 2400.00],
+            ['name' => 'Pulseira Cartier Feminina', 'category' => 'Feminino', 'gold_weight' => 6.0, 'base_price' => 2750.00],
 
             // Formatura
-            ['name' => 'Anel de Formatura Direito', 'category' => 'Formatura', 'subcategory' => 'Anéis', 'gold_weight' => 8.5, 'base_price' => 3800.00],
-            ['name' => 'Anel de Formatura Medicina', 'category' => 'Formatura', 'subcategory' => 'Anéis', 'gold_weight' => 9.0, 'base_price' => 4000.00],
+            ['name' => 'Anel de Formatura Direito', 'category' => 'Formatura', 'gold_weight' => 8.5, 'base_price' => 3800.00],
+            ['name' => 'Anel de Formatura Medicina', 'category' => 'Formatura', 'gold_weight' => 9.0, 'base_price' => 4000.00],
 
             // Casamento
-            ['name' => 'Aliança de Casamento Lisa', 'category' => 'Casamento', 'subcategory' => 'Anéis', 'gold_weight' => 4.0, 'base_price' => 1900.00],
-            ['name' => 'Aliança de Casamento Trabalhada', 'category' => 'Casamento', 'subcategory' => 'Anéis', 'gold_weight' => 4.5, 'base_price' => 2100.00],
+            ['name' => 'Aliança de Casamento Lisa', 'category' => 'Casamento', 'gold_weight' => 4.0, 'base_price' => 1900.00],
+            ['name' => 'Aliança de Casamento Trabalhada', 'category' => 'Casamento', 'gold_weight' => 4.5, 'base_price' => 2100.00],
         ];
     }
 

@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('content');
-            $table->json('favorite')->nullable(); // Array of user emails
-            $table->json('good')->nullable(); // Array of user emails
-            $table->json('bad')->nullable(); // Array of user emails
+            $table->json('favorite')->nullable(); 
+            $table->json('good')->nullable(); 
+            $table->json('bad')->nullable(); 
             $table->timestamps();
         });
 

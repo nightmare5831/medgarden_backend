@@ -15,7 +15,6 @@ class MessageSeeder extends Seeder
         $maria = User::where('email', 'devnight0710@gmail.com')->first();
         $ana = User::where('email', 'tom8jerry0913@gmail.com')->first();
 
-        // Create message 1
         $message1 = Message::create([
             'user_id' => $joao->id,
             'content' => 'Qual é o peso médio dos anéis de ouro? Estou interessado em comprar um anel de ouro e gostaria de saber mais detalhes sobre peso, pureza e preços.',
@@ -42,7 +41,6 @@ class MessageSeeder extends Seeder
             'content' => 'Temos anéis de 5g em promoção. Confira!',
         ]);
 
-        // Create message 2
         $message2 = Message::create([
             'user_id' => $ana->id,
             'content' => 'Quais são as tendências de joias para este ano? Estou procurando por peças modernas e elegantes.',

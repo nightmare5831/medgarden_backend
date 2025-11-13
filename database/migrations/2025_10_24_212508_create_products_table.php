@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('seller_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
             $table->text('description');
             $table->decimal('base_price', 10, 2);
@@ -21,7 +21,6 @@ return new class extends Migration
             $table->decimal('gold_weight_grams', 8, 3);
             $table->decimal('initial_gold_price', 10, 2);
             $table->string('category')->nullable();
-            $table->string('subcategory')->nullable();
             $table->json('images')->nullable();
             $table->json('videos')->nullable();
             $table->string('model_3d_url')->nullable();

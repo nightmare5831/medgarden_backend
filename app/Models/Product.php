@@ -8,7 +8,7 @@ class Product extends Model
 {
 
     protected $fillable = [
-        'seller_id',
+        'user_id',
         'name',
         'description',
         'base_price',
@@ -17,7 +17,6 @@ class Product extends Model
         'gold_karat',
         'initial_gold_price',
         'category',
-        'subcategory',
         'images',
         'videos',
         'model_3d_url',
@@ -42,9 +41,9 @@ class Product extends Model
         'approved_at' => 'datetime',
     ];
 
-    public function seller()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'seller_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function approvedBy()
