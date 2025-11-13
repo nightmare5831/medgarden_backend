@@ -17,33 +17,41 @@ class ProductController extends Controller
             ->where('status', 'approved')
             ->where('is_active', true)
             ->latest()
-            ->get()
-            ->map(function ($product) {
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'description' => $product->description,
-                    'price' => $product->current_price,
-                    'originalPrice' => $product->base_price,
-                    'images' => $product->images ?? [],
-                    'thumbnail' => $product->images[0] ?? '',
-                    'category' => $product->category,
-                    'rating' => 4.5, // Mock data
-                    'reviewCount' => rand(10, 100), // Mock data
-                    'featured' => $product->status === 'approved',
-                    'shipping' => [
-                        'free' => true,
-                        'days' => rand(5, 10),
-                    ],
-                    'model3dUrl' => $product->model_3d_url,
-                    'model3dType' => $product->model_3d_type,
-                    'ownerId' => $product->user->id ?? null,
-                    'ownerName' => $product->user->name ?? 'Usuário',
-                    'ownerRole' => $product->user->role ?? 'store',
-                ];
-            });
+            ->paginate(20);
 
-        return response()->json($products);
+        // Transform products to include owner info
+        $transformedData = $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->current_price,
+                'originalPrice' => $product->base_price,
+                'images' => $product->images ?? [],
+                'thumbnail' => isset($product->images[0]) ? $product->images[0] : '',
+                'category' => $product->category,
+                'rating' => 4.5, // Mock data
+                'reviewCount' => rand(10, 100), // Mock data
+                'featured' => $product->status === 'approved',
+                'shipping' => [
+                    'free' => true,
+                    'days' => rand(5, 10),
+                ],
+                'model3dUrl' => $product->model_3d_url,
+                'model3dType' => $product->model_3d_type,
+                'ownerId' => $product->user->id ?? null,
+                'ownerName' => $product->user->name ?? 'Usuário',
+                'ownerRole' => $product->user->role ?? 'store',
+            ];
+        });
+
+        return response()->json([
+            'data' => $transformedData,
+            'current_page' => $products->currentPage(),
+            'last_page' => $products->lastPage(),
+            'per_page' => $products->perPage(),
+            'total' => $products->total(),
+        ]);
     }
 
     public function store(Request $request)
