@@ -80,7 +80,7 @@ class ProductController extends Controller
         }
 
         $product = Product::create([
-            'seller_id' => $user->id,
+            'user_id' => $user->id,
             ...$request->all(),
             'status' => 'pending',
         ]);
@@ -94,9 +94,9 @@ class ProductController extends Controller
     public function show($id)
     {
         $user = Auth::user();
-        $product = Product::with(['category', 'images', 'seller'])->findOrFail($id);
+        $product = Product::with(['category', 'images', 'user'])->findOrFail($id);
 
-        if ($product->seller_id !== $user->id && !$product->isApproved() && !$user->isAdmin()) {
+        if ($product->user_id !== $user->id && !$product->isApproved() && !$user->isAdmin()) {
             return response()->json(['error' => 'Product not found'], 404);
         }
 
@@ -108,7 +108,7 @@ class ProductController extends Controller
         $user = Auth::user();
         $product = Product::findOrFail($id);
 
-        if ($product->seller_id !== $user->id) {
+        if ($product->user_id !== $user->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -146,7 +146,7 @@ class ProductController extends Controller
         $user = Auth::user();
         $product = Product::findOrFail($id);
 
-        if ($product->seller_id !== $user->id) {
+        if ($product->user_id !== $user->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 

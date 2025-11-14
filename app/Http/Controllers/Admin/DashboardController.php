@@ -33,7 +33,7 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        $recent_products = Product::with('seller')
+        $recent_products = Product::with('user')
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->limit(10)

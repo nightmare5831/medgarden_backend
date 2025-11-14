@@ -69,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
             }
 
             // 3a. Send approval notification to the product owner (seller)
-            $seller = $event->product->seller;
+            $seller = $event->product->user;
             if ($seller && $seller->is_active) {
                 SendEmailJob::dispatch(
                     'product_approved_seller',
@@ -88,9 +88,9 @@ class AppServiceProvider extends ServiceProvider
                 );
             }
 
-            // 3b. Send new product alert to all active buyers
+            // 3b. Send new product alert to all active buyers (patients)
             // TODO: Later implement subscriber system with preferences
-            $buyers = \App\Models\User::where('role', 'buyer')
+            $buyers = \App\Models\User::where('role', 'patient')
                 ->where('is_active', true)
                 ->get();
 

@@ -48,9 +48,16 @@ class GoldPrice extends Model
 
     public static function getRecentForChart($limit = 10)
     {
-        return self::latest('scraped_at')
+        $prices = self::latest('scraped_at')
             ->limit($limit)
-            ->get()
+            ->get();
+
+        // Return empty array if no prices exist
+        if ($prices->isEmpty()) {
+            return collect([]);
+        }
+
+        return $prices
             ->reverse()
             ->values()
             ->map(function ($price) {
@@ -58,9 +65,9 @@ class GoldPrice extends Model
                     'id' => $price->id,
                     'price' => (float) ($price->price_gram_24k ?? $price->price_per_gram),
                     'price_gram_24k' => (float) ($price->price_gram_24k ?? $price->price_per_gram),
-                    'time' => $price->scraped_at->format('H') . 'h',
-                    'date' => $price->scraped_at->format('d/m/Y'),
-                    'timestamp' => $price->scraped_at->timestamp,
+                    'time' => $price->scraped_at ? $price->scraped_at->format('H') . 'h' : '',
+                    'date' => $price->scraped_at ? $price->scraped_at->format('d/m/Y') : '',
+                    'timestamp' => $price->scraped_at ? $price->scraped_at->timestamp : 0,
                 ];
             });
     }
